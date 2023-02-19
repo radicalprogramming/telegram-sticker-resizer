@@ -1,5 +1,5 @@
-# telegram-sticker-converter
-Converts a bunch of images to be compatible with Telegram.
+# telegram-sticker-resizer
+Resizes a bunch of images to be compatible with Telegram sticker bot.
 
 # Description 
 This program takes most images and scales down the largest dimension (x or y) to 512.
