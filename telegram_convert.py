@@ -1,4 +1,4 @@
-# This program takes most images and scales down the largest dimension (x or y) to 512.
+# This program takes most images and scales down the largest dimension (x or y) to LARGEST_DIMENSION.
 # The intention is to convert an image to being Telegram sticker compatible.
 # Requires Python 3 and the Pillow module.
 
@@ -17,10 +17,19 @@ from PIL import Image
 
 CONVERTED_FOLDER_NAME = "converted_telegram"
 
+LARGEST_DIMENSION = 512 # Change to alter the generated image's minimum dimension size
+
 image_path = os.getcwd()
-print(image_path)
-if not os.path.exists(CONVERTED_FOLDER_NAME):
-    os.makedirs(CONVERTED_FOLDER_NAME)
+
+i = 0
+temp = CONVERTED_FOLDER_NAME
+if os.path.exists(CONVERTED_FOLDER_NAME):
+    while os.path.exists(temp):
+        temp = CONVERTED_FOLDER_NAME + "_" + str(i)
+        i += 1
+    CONVERTED_FOLDER_NAME = temp
+    
+os.makedirs(CONVERTED_FOLDER_NAME)
 
 counter = 0
 for file in os.listdir(image_path):
@@ -30,24 +39,25 @@ for file in os.listdir(image_path):
         with Image.open(f, 'r') as im:
             sizeX = im.size[0]
             sizeY = im.size[1]
+            
             if sizeX >= sizeY:
-                if sizeX >= 512:
-                    diff = sizeX - 512
-                    resized = im.resize((512,sizeY - diff))
-                else:
-                    diff = 512 - sizeX
-                    resized = im.resize((512,sizeY + diff))
+                ratio = sizeY / sizeX
+                if scaled_val > LARGEST_DIMENSION: # if in some freak incident where it could round
+                    scaled_val = LARGEST_DIMENSION # above the largest dimension that is set, prevent that.
+                resized = im.resize((LARGEST_DIMENSION, round(ratio * LARGEST_DIMENSION)))
             else:
-                if sizeY >= 512:
-                    diff = sizeY - 512
-                    resized = im.resize((sizeX - diff, 512))
-                else:
-                    diff = 512 - sizeY
-                    resized = im.resize((sizeX + diff, 512))
+                ratio = sizeX / sizeY
+                scaled_val = round(ratio * LARGEST_DIMENSION)
+                
+                if scaled_val > LARGEST_DIMENSION: # if in some freak incident where it could round
+                    scaled_val = LARGEST_DIMENSION # above the largest dimension that is set, prevent that.
+                resized = im.resize((scaled_val, LARGEST_DIMENSION))
+                
             resized.save(f"{CONVERTED_FOLDER_NAME}/resized_{counter}{extension}")
             counter += 1
-    except Exception as error: # this is how we can do any image supported by pillow
+    except Exception as error: # this is a lazy way to handle any image supported by pillow
+                               # it continues searching if it doesn't find a compatible image file
         #print(error) #debug
         continue
 
-print(f"{counter} stickers placed in: {os.getcwd()}")
+print(f"{counter} stickers placed in: {os.getcwd()}/{CONVERTED_FOLDER_NAME}")
