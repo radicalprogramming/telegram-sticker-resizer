@@ -42,6 +42,8 @@ for file in os.listdir(image_path):
             
             if sizeX >= sizeY:
                 ratio = sizeY / sizeX
+                scaled_val = round(ratio * LARGEST_DIMENSION)
+                
                 if scaled_val > LARGEST_DIMENSION: # if in some freak incident where it could round
                     scaled_val = LARGEST_DIMENSION # above the largest dimension that is set, prevent that.
                 resized = im.resize((LARGEST_DIMENSION, round(ratio * LARGEST_DIMENSION)))
