@@ -12,10 +12,8 @@
 #  5. The telegram compatible stickers will be in the 'converted_telegram' folder.
 
 from __future__ import with_statement
-from PIL import Image
 import os
-import sys
-import re
+from PIL import Image
 
 CONVERTED_FOLDER_NAME = "converted_telegram"
 
@@ -51,6 +49,5 @@ for file in os.listdir(image_path):
     except Exception as error: # this is how we can do any image supported by pillow
         #print(error) #debug
         continue
-            
+
 print(f"{counter} stickers placed in: {os.getcwd()}")
-        
